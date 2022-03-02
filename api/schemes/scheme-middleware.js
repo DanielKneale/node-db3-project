@@ -1,3 +1,4 @@
+const db = require('../../data/db-config')
 /*
   If `scheme_id` does not exist in the database:
 
@@ -6,8 +7,13 @@
     "message": "scheme with scheme_id <actual id> not found"
   }
 */
-const checkSchemeId = (req, res, next) => {
-
+const checkSchemeId =  (req, res, next) => {
+  const scheme = db('schemes').where('scheme_id', req.params.id).first()
+  if (scheme) {
+    next()
+  } else {
+    res.status(404).json({"message": `scheme with scheme_id ${id} not found`})
+  }
 }
 
 /*
@@ -19,7 +25,11 @@ const checkSchemeId = (req, res, next) => {
   }
 */
 const validateScheme = (req, res, next) => {
-
+  if (!req.body.scheme_name) {
+    next({"message": "invalid scheme_name", status: 404 })
+  } else {
+    next()
+  }
 }
 
 /*
@@ -32,7 +42,11 @@ const validateScheme = (req, res, next) => {
   }
 */
 const validateStep = (req, res, next) => {
-
+  if (!req.body.instructions || req.body.step_number < 1) {
+    next({ "message": "invalid step", status: 404 })
+  } else {
+    next()
+  }
 }
 
 module.exports = {
